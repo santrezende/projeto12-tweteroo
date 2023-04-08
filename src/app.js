@@ -1,13 +1,14 @@
 import express from "express";
 
 const app = express();
-const aloo = {
-    name: "san",
-    idade: 23
-}
+app.use(express.json());
 
-app.get("/teste", (req, res) => {
-    res.send(aloo)
+const users = [];
+
+app.post("/sign-up", (req, res) => {
+    users.push(req.body.username);
+    console.log(users);
+    res.send("OK");
 });
 
 const PORT = 5000;
