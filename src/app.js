@@ -10,7 +10,7 @@ app.post("/sign-up", (req, res) => {
     if (!req.body.username || !req.body.avatar || typeof req.body.username !== "string" || typeof req.body.avatar !== "string") {
         res.status(400).send("Todos os campos são obrigatórios!");
         return;
-    }
+    };
     users.push({
         username: req.body.username,
         avatar: req.body.avatar
@@ -41,6 +41,12 @@ app.get("/tweets", (req, res) => {
     const lastTweets = tweets.slice(-10);
     res.send(lastTweets);
 })
+
+app.get("/tweets/:username", (req, res) => {
+    const username = req.params.username;
+    const userTweets = tweets.filter(tweet => tweet.username === username);
+    res.status(200).send(userTweets);
+});
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
