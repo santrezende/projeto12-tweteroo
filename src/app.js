@@ -8,8 +8,7 @@ const tweets = [];
 
 app.post("/sign-up", (req, res) => {
     if (!req.body.username || !req.body.avatar || typeof req.body.username !== "string" || typeof req.body.avatar !== "string") {
-        res.status(400).send("Todos os campos são obrigatórios!");
-        return;
+        return res.status(400).send("Todos os campos são obrigatórios!");
     };
     users.push({
         username: req.body.username,
@@ -19,15 +18,14 @@ app.post("/sign-up", (req, res) => {
 });
 
 app.post("/tweets", (req, res) => {
-    if (!req.body.username || !req.body.tweet || typeof req.body.username !== "string" || typeof req.body.tweet !== "string") {
-        res.status(400).send("Todos os campos são obrigatórios!");
-        return;
+    if (!req.headers.user || !req.body.tweet || typeof req.headers.user !== "string" || typeof req.body.tweet !== "string") {
+        return res.status(400).send("Todos os campos são obrigatórios!");
     }
-    const userTweet = users.find(user => user.username === req.body.username);
+    const userTweet = users.find(user => user.username === req.headers.user);
     if (userTweet) {
         const userAvatar = userTweet.avatar;
         tweets.push({
-            username: req.body.username,
+            username: req.headers.user,
             avatar: userAvatar,
             tweet: req.body.tweet
         });
@@ -38,9 +36,16 @@ app.post("/tweets", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
+    const page = parseInt((req.query.page) * 10);
+    if (page && page >= 1) {
+        const tweetsPage = tweets.slice((page - 10), page);
+        return res.status(200).send(tweetsPage);
+    } else if (page < 1) {
+        return res.status(400).send("Informe uma página válida!");
+    }
     const lastTweets = tweets.slice(-10);
     res.send(lastTweets);
-})
+});
 
 app.get("/tweets/:username", (req, res) => {
     const username = req.params.username;
